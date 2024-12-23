@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace hydrogen2D.Managers
 {
-    internal class HydrogenLibraryManager
+    internal class HydrogenLibraryMgr
     {
         // simplifies stuff so much when injecting libs in env
 
@@ -22,6 +22,7 @@ namespace hydrogen2D.Managers
             state.Environment["font"] = new LuaTable();
             state.Environment["font"].Read<LuaTable>()["new"] = Libraries.TypeFont.Constructor();
             state.Environment["font"].Read<LuaTable>()["defaultFont"] = Libraries.TypeFont.DefaultFont();
+            state.Environment["font"].Read<LuaTable>()["fromFile"] = Libraries.TypeFont.FromFile();
         }
 
         public static void IncludeTypeBrush(LuaState state)
@@ -41,6 +42,16 @@ namespace hydrogen2D.Managers
             state.Environment["bounds"] = new LuaTable();
             state.Environment["bounds"].Read<LuaTable>()["new"] = Libraries.TypeBounds.Constructor();
             state.Environment["bounds"].Read<LuaTable>()["fromPoints"] = Libraries.TypeBounds.FromPoints();
+        }
+
+        public static void IncludePopup(LuaState state)
+        {
+            state.Environment["popup"] = new LuaTable();
+            state.Environment["popup"].Read<LuaTable>()["error"] = Libraries.Popup.Error();
+            state.Environment["popup"].Read<LuaTable>()["warn"] = Libraries.Popup.Warn();
+            state.Environment["popup"].Read<LuaTable>()["info"] = Libraries.Popup.Info();
+            state.Environment["popup"].Read<LuaTable>()["message"] = Libraries.Popup.Message();
+            state.Environment["popup"].Read<LuaTable>()["confirm"] = Libraries.Popup.Confirm();
         }
 
         // note: add a hydrogen library for cfg!

@@ -9,16 +9,71 @@ namespace hydrogen2D.Libraries
 {
     internal class Popup
     {
-        // note: finish the other functions (warn, info, confirm etc) then bind to env
-
-        public static LuaFunction Error() // this function isnt even bound yet
+        public static LuaFunction Error()
         {
             return new LuaFunction((context, buffer, ct) =>
             {
                 string msg = context.GetArgument<string>(0);
-                string? title = context.GetArgument<string>(1); // using a ternary in display probably wont do anything since this line will throw an exception anyway
+                string title = "Error";
+                if (context.Arguments.Length == 2) title = context.GetArgument<string>(1);
 
-                MessageBox.Show(msg, title == null ? "Error" : title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return new(0);
+            });
+        }
+
+        public static LuaFunction Warn()
+        {
+            return new LuaFunction((context, buffer, ct) =>
+            {
+                string msg = context.GetArgument<string>(0);
+                string title = "Warn";
+                if (context.Arguments.Length == 2) title = context.GetArgument<string>(1);
+
+                MessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                return new(0);
+            });
+        }
+
+        public static LuaFunction Info()
+        {
+            return new LuaFunction((context, buffer, ct) =>
+            {
+                string msg = context.GetArgument<string>(0);
+                string title = "Info";
+                if (context.Arguments.Length == 2) title = context.GetArgument<string>(1);
+
+                MessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                return new(0);
+            });
+        }
+
+        public static LuaFunction Confirm()
+        {
+            return new LuaFunction((context, buffer, ct) =>
+            {
+                string msg = context.GetArgument<string>(0);
+                string title = "Confirmation";
+                if (context.Arguments.Length == 2) title = context.GetArgument<string>(1);
+
+                buffer.Span[0] = MessageBox.Show(msg, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question).ToString().ToLower();
+
+                return new(1);
+            });
+        }
+
+        public static LuaFunction Message()
+        {
+            return new LuaFunction((context, buffer, ct) =>
+            {
+                string msg = context.GetArgument<string>(0);
+                string title = "Message";
+                if (context.Arguments.Length == 2) title = context.GetArgument<string>(1);
+
+                MessageBox.Show(msg, title, MessageBoxButtons.OK);
 
                 return new(0);
             });

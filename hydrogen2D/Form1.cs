@@ -25,12 +25,27 @@ namespace hydrogen2D
             state = LuaState.Create();
             g = canvas.CreateGraphics();
 
-            Managers.HydrogenLibraryManager.IncludeDrawApi(state);
-            Managers.HydrogenLibraryManager.IncludeTypeFont(state);
-            Managers.HydrogenLibraryManager.IncludeTypeBrush(state);
-            Managers.HydrogenLibraryManager.IncludeTypePoint(state);
+            Managers.HydrogenLibraryMgr.IncludeDrawApi(state);
+            Managers.HydrogenLibraryMgr.IncludeTypeFont(state);
+            Managers.HydrogenLibraryMgr.IncludeTypeBrush(state);
+            Managers.HydrogenLibraryMgr.IncludeTypePoint(state);
+            Managers.HydrogenLibraryMgr.IncludeTypeBounds(state);
+            Managers.HydrogenLibraryMgr.IncludePopup(state);
 
             state.DoFileAsync(scenepath);
+
+            if (state.Environment["init"].TryRead<LuaFunction>(out _))
+            {
+                LuaFunctionExecutionContext lfec = new LuaFunctionExecutionContext
+                {
+                    State = state,
+                    Thread = state.MainThread,
+                    FrameBase = 0,
+                    ArgumentCount = 0,
+                };
+
+                state.Environment["init"].Read<LuaFunction>().InvokeAsync(lfec, new Memory<LuaValue>(Array.Empty<LuaValue>()), CancellationToken.None);
+            }
         }
 
         private void canvas_Paint(object sender, PaintEventArgs e)

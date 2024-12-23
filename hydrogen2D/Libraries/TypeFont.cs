@@ -20,6 +20,7 @@ namespace hydrogen2D.Libraries
 
                 LuaTable t = new LuaTable();
                 t["type"] = "font";
+                t["fontType"] = "system";
 
                 t["name"] = name;
                 t["size"] = size;
@@ -34,6 +35,7 @@ namespace hydrogen2D.Libraries
         {
             LuaTable t = new LuaTable();
             t["type"] = "font";
+            t["fontType"] = "system";
 
             t["name"] = Form1. DefaultFont.Name;
             t["size"] = Form1.DefaultFont.Size;
@@ -41,6 +43,25 @@ namespace hydrogen2D.Libraries
             return t;
         }
 
-        // todo: implement font.fromFile(), as it is already in docs
+        public static LuaFunction FromFile()
+        {
+            return new LuaFunction((context, buffer, ct) =>
+            {
+                string path = context.GetArgument<string>(0);
+                string size = context.GetArgument<string>(0);
+
+                LuaTable t = new LuaTable();
+                t["type"] = "font";
+                t["fontType"] = "file";
+
+                t["path"] = path;
+                t["size"] = size;
+                t["name"] = Helpers.LuaArgsHelper.GetFont(context, t).Name; // should be fine considering the file part of the helper doesnt require the "name" param
+
+                buffer.Span[0] = t;
+
+                return new(1);
+            });
+        }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using Lua;
+using Lua.CodeAnalysis.Syntax.Nodes;
 using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,23 +16,55 @@ namespace hydrogen2D.Helpers
     {
         // simplifies stuff
 
+        #region font
+
         public static Font GetFont(LuaFunctionExecutionContext context, int index)
         {
             var table = context.GetArgument<LuaTable>(index);
+            return GetFont(context, table);
+        }
 
+        public static Font GetFont(LuaFunctionExecutionContext context, LuaTable table)
+        {
             string type = table["type"].Read<string>();
             if (type != "font") throw new ArgumentException();
 
-            string fontName = table["name"].Read<string>();
-            float fontSize = table["size"].Read<float>();
+            string fontType = table["fontType"].Read<string>();
+            if (fontType == "system")
+            {
+                string fontName = table["name"].Read<string>();
+                float fontSize = table["size"].Read<float>();
 
-            return new Font(fontName, fontSize);
+                return new Font(fontName, fontSize);
+            }
+            else if (fontType == "file")
+            {
+                string path = table["path"].Read<string>();
+                float size = table["size"].Read<float>();
+
+                PrivateFontCollection pfc = new PrivateFontCollection();
+                pfc.AddFontFile(path);
+
+                return new Font(pfc.Families[0], (int)size);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
+
+        #endregion
+
+        #region brush
 
         public static Brush GetBrush(LuaFunctionExecutionContext context, int index)
         {
             var table = context.GetArgument<LuaTable>(index);
+            return GetBrush(context, table);
+        }
 
+        public static Brush GetBrush(LuaFunctionExecutionContext context, LuaTable table)
+        {
             string type = table["type"].Read<string>();
             if (type != "brush") throw new ArgumentException();
 
@@ -68,10 +103,18 @@ namespace hydrogen2D.Helpers
             }
         }
 
+        #endregion
+
+        #region point
+
         public static PointF GetPoint(LuaFunctionExecutionContext context, int index)
         {
             var table = context.GetArgument<LuaTable>(index);
+            return GetPoint(context, table);
+        }
 
+        public static PointF GetPoint(LuaFunctionExecutionContext context, LuaTable table)
+        {
             string type = table["type"].Read<string>();
             if (type != "point") throw new ArgumentException();
 
@@ -81,10 +124,18 @@ namespace hydrogen2D.Helpers
             return new PointF(x, y);
         }
 
+        #endregion
+
+        #region color
+
         public static Color GetColor(LuaFunctionExecutionContext context, int index)
         {
             var table = context.GetArgument<LuaTable>(index);
+            return GetColor(context, table);
+        }
 
+        public static Color GetColor(LuaFunctionExecutionContext context, LuaTable table)
+        {
             string type = table["type"].Read<string>();
             if (type != "color") throw new ArgumentException();
 
@@ -94,5 +145,7 @@ namespace hydrogen2D.Helpers
 
             return Helpers.ColorHelper.RangeSafeColor(r, g, b);
         }
+
+        #endregion
     }
 }
